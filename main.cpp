@@ -8,10 +8,14 @@
 #include <QDebug>
 #include <QSqlRecord>
 
+
+
 void printSqlite();
 void recordSqlite();
 void deleteSqlite();
 void printSqlite(int);
+void printSizeSqlite();
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -21,10 +25,9 @@ int main(int argc, char *argv[])
     db.setDatabaseName("D:/QtProject/qmlsqlite/MedicalMeasurements1.db3");//для windows
     db.open();
 
-    printSqlite(300000);
+    //printSqlite(300000);
+    //printSizeSqlite();
 
-
-    db.close();
 
     return a.exec();
 }
@@ -59,10 +62,12 @@ void deleteSqlite()
 {
 
 }
+
 void printSqlite(int num)
 {
     num -= 1;
     QSqlQuery query;
+    query.setForwardOnly(1); //для ускорения
     query.exec("SELECT ID, NUMBERPERDAY, PROBENUMBER, DATEYEAR, DATEMONTH, DATEDAY, TIMEHOUR, TIMEMINUTE, GL, LC, BARCODE FROM TABLEMEDICALMEASUREMENTS");
     query.seek(num);
         //QString id = query.value(0).toString();
@@ -80,3 +85,41 @@ void printSqlite(int num)
                  << date_day << " " << time_hour << " " << time_minute << " " << gl << " " << lc << " " << bar_code;
 
 }
+
+void printSizeSqlite()
+{
+    /*
+    QSqlQuery query;//("SELECT ID, NUMBERPERDAY, PROBENUMBER, DATEYEAR, DATEMONTH, DATEDAY, TIMEHOUR, TIMEMINUTE, GL, LC, BARCODE FROM TABLEMEDICALMEASUREMENTS");
+    query.setForwardOnly(1); //для ускорения
+    query.exec("SELECT ID, NUMBERPERDAY, PROBENUMBER, DATEYEAR, DATEMONTH, DATEDAY, TIMEHOUR, TIMEMINUTE, GL, LC, BARCODE FROM TABLEMEDICALMEASUREMENTS");
+    //int s = query.numRowsAffected ();
+    //qDebug() << s;
+
+
+        int initialPos = query.at();
+        // Very strange but for no records .at() returns -2
+        int pos = 0;
+        if (query.last())
+            pos = query.at() + 1;
+        else
+            pos = 0;
+        // Important to restore initial pos
+        query.seek(initialPos);
+        qDebug() << pos;
+        */
+
+    QSqlQuery query;//("SELECT ID, NUMBERPERDAY, PROBENUMBER, DATEYEAR, DATEMONTH, DATEDAY, TIMEHOUR, TIMEMINUTE, GL, LC, BARCODE FROM TABLEMEDICALMEASUREMENTS");
+    query.setForwardOnly(1); //для ускорения
+    query.exec("SELECT ID, NUMBERPERDAY, PROBENUMBER, DATEYEAR, DATEMONTH, DATEDAY, TIMEHOUR, TIMEMINUTE, GL, LC, BARCODE FROM TABLEMEDICALMEASUREMENTS");
+    int numberOfRows = 0;
+    if(query.last())
+    {
+        numberOfRows =  query.at() + 1;
+        //query.first();
+        //query.previous();
+    }
+    qDebug() << numberOfRows;
+}
+
+
+
